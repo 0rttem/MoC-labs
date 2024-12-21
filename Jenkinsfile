@@ -1,14 +1,13 @@
 pipeline {
-        agent none
-        stages {
-         
-          stage("build & SonarQube Scanner") {
-            agent any
-            steps {
-              withSonarQubeEnv('Sonar') {
-                sh 'mvn clean package sonar:sonar'
-              }
-            }
-          }
-        }
-      }
+agent any
+triggers {
+cron(get_cron_string())
+githubPush()
+pollSCM("")
+}
+options {
+skipDefaultCheckout(true)
+parallelsAlwaysFailFast()
+disableConcurrentBuilds()
+buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
+}
